@@ -22,31 +22,50 @@ use utf8;
         print q!Content-type:text/html;charset:utf-8;
 
 <html>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1">
 <style>
+    html,body{
+        background:#001;
+    }
     .centered {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
     }
+    table{
+        width:72vw;
+        height:72vw;
+    }
     td{
-        width:5rem;
-        height:5rem;
+        width:24vw;
+        height:24vw;
+    }
+    button:hover{
+        background:#11f;
+        border:        0.5vw solid #0000ff;
+        border-bottom: 0.5vw solid #000066;
+        border-right:  0.5vw solid #000066;
     }
     button{
-        width:100%;
-        padding:5rem;
-        font-size:2rem;
+        margin:1vw;
+        width:70%;
+        height:70%;
+        font-size:3vw;
         cursor:pointer;
-        background:blue;
+        background:#00f;
         color:white;
-        border-radius:5rem;
+        border-radius:3vw;
+        border: 0.5vw solid #000066;
+        border-bottom: 0.5vw solid #000033;
+        border-right:  0.5vw solid #000033;
+        transition: all 1s;
     }
 </style>
 <script>
     function call(key){
         fetch('/?key='+key);
+        window.navigator.vibrate(200);
     }
 </script>
 <body>
@@ -54,17 +73,17 @@ use utf8;
     <table>
     <tr>
         <td></td>
-        <td><button onclick="call('UP')">volume<br>up</button></td>
+        <td><button onclick="call('UP')">Vol. +</button></td>
         <td></td>
     </tr>
     <tr>
         <td><button onclick="call('LEFT')">&lt;&lt;</button></td>
-        <td><button onclick="call('SPACE')">pause<br>start</button></td>
+        <td><button onclick="call('SPACE')">&#x25b6; / ||</button></td>
         <td><button onclick="call('RIGHT')">&gt;&gt;</button></td>
     </tr>
     <tr>
         <td></td>
-        <td><button onclick="call('DOWN')">volume<br>down</button></td>
+        <td><button onclick="call('DOWN')">Vol. -</button></td>
         <td></td>
     </tr>
 </div>
