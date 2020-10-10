@@ -83,7 +83,7 @@ sub get_html{
 <script>
     function call(key){
         fetch('/?key='+key);
-        window.navigator.vibrate(200);
+        window.navigator.vibrate(50);
     }
     document.addEventListener('keyup', function (e) {
         if ((e.key=='ArrowLeft')  || (e.key=='MediaRewind'))      call ('LEFT');
