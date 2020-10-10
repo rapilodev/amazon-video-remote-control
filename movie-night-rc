@@ -25,8 +25,8 @@ sub handle_request{
     print get_html();
     return unless $key;
     return unless $key=~/^(LEFT|RIGHT|UP|DOWN|SPACE)$/;
-    # put your keyboard input here
-    my $device = '/dev/input/event4';
+    my $device = (glob("/dev/input/by-path/*event-kbd"))[0];
+    die "no keyboard found at /dev/input/by-path" unless $device;
     system qq{evemu-event $device --type EV_KEY --code KEY_$key --value 1 --sync};
     system qq{evemu-event $device --type EV_KEY --code KEY_$key --value 0 --sync};
 }
