@@ -44,7 +44,7 @@ __DATA__
     *{
         border:0;
         padding:0;
-        background:#001;
+        background:#111;
     }
     .centered {
       position: fixed;
@@ -62,10 +62,11 @@ __DATA__
         text-align:center;
     }
     button:hover{
-        background:#11f;
-        border:        1vmin solid #00f;
-        border-bottom: 1vmin solid #006;
-        border-right:  1vmin solid #006;
+        color: #000;
+        background:#fff;
+        border:        1vmin solid #fff;
+        border-bottom: 1vmin solid #666;
+        border-right:  1vmin solid #666;
     }
     button{
         margin:2vmin;
@@ -76,9 +77,9 @@ __DATA__
         background:#ccc;
         color:white;
         border-radius:5vmin;
-        border: 1vmin solid #006;
-        border-bottom: 1vmin solid #003;
-        border-right:  1vmin solid #003;
+        border: 1vmin solid #666;
+        border-bottom: 1vmin solid #666;
+        border-right:  1vmin solid #666;
         transition: all 1s;
     }
 </style>
