@@ -85,6 +85,13 @@ sub get_html{
         fetch('/?key='+key);
         window.navigator.vibrate(200);
     }
+    document.addEventListener('keyup', function (e) {
+        if ((e.key=='ArrowLeft')  || (e.key=='MediaRewind'))      call ('LEFT');
+        if ((e.key=='ArrowRight') || (e.key=='MediaFastForward')) call ('RIGHT');
+        if ((e.key=='ArrowUp')    || (e.key=='AudioVolumeUp'))    call ('UP');
+        if ((e.key=='ArrowDown')  || (e.key=='AudioVolumeDown'))  call ('DOWN');
+        if ((e.key==' ')          || (e.key=='MediaPlayPause'))   call ('SPACE');
+    });
 </script>
 <body>
 <div class="centered">
