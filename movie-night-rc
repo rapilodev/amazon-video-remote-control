@@ -24,7 +24,9 @@ use utf8;
 <html>
 <meta name="viewport" content="initial-scale=1, maximum-scale=1">
 <style>
-    html,body{
+    *{
+        border:0;
+        padding:0;
         background:#001;
     }
     .centered {
@@ -34,31 +36,32 @@ use utf8;
       transform: translate(-50%, -50%);
     }
     table{
-        width:72vw;
-        height:72vw;
+        width:100vmin;
+        height:100vmin;
     }
     td{
-        width:24vw;
-        height:24vw;
+        width:25vmin;
+        height:25vmin;
+        text-align:center;
     }
     button:hover{
         background:#11f;
-        border:        0.5vw solid #0000ff;
-        border-bottom: 0.5vw solid #000066;
-        border-right:  0.5vw solid #000066;
+        border:        1vmin solid #00f;
+        border-bottom: 1vmin solid #006;
+        border-right:  1vmin solid #006;
     }
     button{
-        margin:1vw;
-        width:70%;
-        height:70%;
-        font-size:3vw;
+        margin:2vmin;
+        width:66%;
+        height:66%;
+        font-size:5vmin;
         cursor:pointer;
-        background:#00f;
+        background:#ccc;
         color:white;
-        border-radius:3vw;
-        border: 0.5vw solid #000066;
-        border-bottom: 0.5vw solid #000033;
-        border-right:  0.5vw solid #000033;
+        border-radius:5vmin;
+        border: 1vmin solid #006;
+        border-bottom: 1vmin solid #003;
+        border-right:  1vmin solid #003;
         transition: all 1s;
     }
 </style>
