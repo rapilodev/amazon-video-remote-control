@@ -93,6 +93,7 @@ sub get_html{
         if ((e.key==' ')          || (e.key=='MediaPlayPause'))   call ('SPACE');
     });
 </script>
+</head>
 <body>
 <div class="centered">
     <table>
