@@ -11,3 +11,5 @@ A static web page contains the buttons to be pressed. The web page can now be us
 - You can now access the remote control from any device in the same network on port 8080 of the computer
 
 Attention! evemu-event will only run with root privileges. This allows to send unsecured keyboard input over the network to any foreground application!
+
+![screenshot](movie-night-rc.png)
