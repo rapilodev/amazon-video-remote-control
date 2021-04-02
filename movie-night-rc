@@ -18,6 +18,7 @@ $| = 1;
         return unless ref $cgi;
         my $url = $cgi->url( -path_info => 1, -relative => 1 );
 
+        return manifest()                               if $url eq '/manifest.json';
         return favicon()                                if $url eq '/favicon.svg';
         return css()                                    if $url eq '/style.css';
         return javascript()                             if $url eq '/script.js';
@@ -46,6 +47,24 @@ $| = 1;
         system qq{evemu-event $device --type EV_KEY --code KEY_$key --value 1 --sync};
         system qq{evemu-event $device --type EV_KEY --code KEY_$key --value 0 --sync} or die $!;
         respond 'application/json', qq!{"key":"$key"}!;
+    }
+
+    sub manifest {
+        respond 'application/json', q!{
+      "name": "Movie Remote Control",
+      "short_name": "Movie Remote Control",
+      "theme_color": "#fff",
+      "background_color": "#000000",
+      "display": "fullscreen",
+      "scope": "/",
+      "start_url": "/",
+      "icons": [{
+            "src": "/favicon.svg",
+            "purpose": "maskable any",
+            "sizes": "any"
+      }]
+    }
+    !;
     }
 
     sub favicon {
@@ -129,6 +148,9 @@ $| = 1;
             <title>Movie Remote Control</title>
             <meta charset="utf8">
             <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+            <meta name="mobile-web-app-capable" content="yes">
+            <meta name="apple-mobile-web-app-capable" content="yes">
+            <link rel="manifest" href="manifest.json">
             <link rel="icon" href="favicon.svg" sizes="any" type="image/svg+xml">
             <link rel="stylesheet" href="style.css">
             <script src="script.js"></script>
