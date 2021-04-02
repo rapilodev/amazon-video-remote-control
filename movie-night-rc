@@ -2,9 +2,10 @@
 use warnings;
 use strict;
 use utf8;
-use feature 'state';
+$| = 1;
 {
-    package AmazonRemoteControlServer;
+
+    package MovieRemoteControlServer;
 
     use HTTP::Server::Simple::CGI;
     use base qw(HTTP::Server::Simple::CGI);
@@ -15,75 +16,42 @@ use feature 'state';
 
         print "HTTP/1.0 200 OK\r\n";
         return unless ref $cgi;
-        main::handle_request(scalar($cgi->param('key')));
-    }
-}
+        my $url = $cgi->url( -path_info => 1, -relative => 1 );
 
-sub handle_request{
-    my $key = shift;
+        return css()                                    if $url eq '/style.css';
+        return javascript()                             if $url eq '/script.js';
+        return send_key( scalar( $cgi->param('key') ) ) if $cgi->param('key');
+        return main_page();
+    }
 
-    state $data = do { local $/; <DATA> };
-    print qq{Content-type:text/html;charset:utf-8;\n\n}.$data;
-    return unless $key;
-    return unless $key=~/^(LEFT|RIGHT|UP|DOWN|SPACE)$/;
-    my $device = (glob("/dev/input/by-path/*event-kbd"))[0];
-    die "no keyboard found at /dev/input/by-path" unless $device;
-    system qq{evemu-event $device --type EV_KEY --code KEY_$key --value 1 --sync};
-    system qq{evemu-event $device --type EV_KEY --code KEY_$key --value 0 --sync};
-}
+    sub content_type {
+        return qq{Content-type:} . shift . qq{\n\n};
+    }
 
+    sub respond {
+        my ( $type, $content ) = @_;
+        $content =~ s/\n\s+/\n/g;
+        print content_type($type) . $content;
+        return 1;
+    }
 
-AmazonRemoteControlServer->new(8080)->run();
+    sub send_key {
+        my $key = shift;
 
-__DATA__
-<html>
-<head>
-<meta charset="utf8">
-<meta name="viewport" content="initial-scale=1, maximum-scale=1">
-<style>
-    *{
-        border:0;
-        padding:0;
-        background:#111;
+        return unless $key;
+        return unless $key =~ /^(LEFT|RIGHT|UP|DOWN|SPACE)$/;
+        my $device = ( glob("/dev/input/by-path/*event-kbd") )[0];
+        die "no keyboard found at /dev/input/by-path" unless $device;
+        system qq{evemu-event $device --type EV_KEY --code KEY_$key --value 1 --sync};
+        system qq{evemu-event $device --type EV_KEY --code KEY_$key --value 0 --sync} or die $!;
+        respond 'application/json', qq!{"key":"$key"}!;
     }
-    .centered {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+
+    sub javascript {
+        respond 'text/javascript', q!
+    function init(){
+        document.body.requestFullscreen();
     }
-    table{
-        width:100vmin;
-        height:100vmin;
-    }
-    td{
-        width:25vmin;
-        height:25vmin;
-        text-align:center;
-    }
-    button:hover{
-        color: #000;
-        background:#fff;
-        border:        1vmin solid #fff;
-        border-bottom: 1vmin solid #666;
-        border-right:  1vmin solid #666;
-    }
-    button{
-        margin:2vmin;
-        width:66%;
-        height:66%;
-        font-size:5vmin;
-        cursor:pointer;
-        background:#ccc;
-        color:white;
-        border-radius:5vmin;
-        border: 1vmin solid #666;
-        border-bottom: 1vmin solid #666;
-        border-right:  1vmin solid #666;
-        transition: all 1s;
-    }
-</style>
-<script>
     function call(key){
         fetch('/?key='+key);
         window.navigator.vibrate(50);
@@ -95,27 +63,91 @@ __DATA__
         if ((e.key=='ArrowDown')  || (e.key=='AudioVolumeDown'))  call ('DOWN');
         if ((e.key==' ')          || (e.key=='MediaPlayPause'))   call ('SPACE');
     });
-</script>
-</head>
-<body>
-<div class="centered">
-    <table>
-    <tr>
-        <td></td>
-        <td><button onclick="call('UP')">Vol. +</button></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><button onclick="call('LEFT')">&lt;&lt;</button></td>
-        <td><button onclick="call('SPACE')">&#x25b6; / ||</button></td>
-        <td><button onclick="call('RIGHT')">&gt;&gt;</button></td>
-    </tr>
-    <tr>
-        <td></td>
-        <td><button onclick="call('DOWN')">Vol. -</button></td>
-        <td></td>
-    </tr>
-</div>
-</body>
-</html>
+    window.addEventListener('DOMContentLoaded', init, false);
+    !;
+    }
 
+    sub css {
+        respond 'text/css', q!
+    *{
+        border:0;
+        padding:0;
+    }
+    .centered {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    body{
+        background:#111;
+    }
+    table{
+        width:100vmin;
+        height:100vmin;
+    }
+    td{
+        width:25vmin;
+        height:25vmin;
+        text-align:center;
+    }
+    button:hover,button:focus{
+        border: solid 0.5vmin solid #333;
+        box-shadow:1vmin 1vmin 0.5vmin black, -1vmin 1vmin 0.5vmin black,inset 0 1vmin 1vmin #666;
+        outline: none;
+    }
+    button{
+        transition: all 0.5s;
+        margin:2vmin;
+        width:30vmin;
+        height:30vmin;
+        font-size:5vmin;
+        cursor:pointer;
+        background:#ccc;
+        color:black;
+        border-radius:30vmin;
+        border: solid 1vmin #333;
+        box-shadow:1vmin 1vmin 1vmin black, -1vmin 1vmin 1vmin black;
+    }
+    !;
+    }
+
+    sub main_page {
+        respond 'text/html;charset:utf-8;', q%
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>Movie Remote Control</title>
+            <meta charset="utf8">
+            <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+            <link rel="stylesheet" href="style.css">
+            <script src="script.js"></script>
+        </head>
+        <body>
+            <div class="centered">
+                <table>
+                <tr>
+                    <td></td>
+                    <td><button onclick="call('UP')">Vol. +</button></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><button onclick="call('LEFT')">&lt;&lt;</button></td>
+                    <td><button onclick="call('SPACE')">&#x25b6; / ||</button></td>
+                    <td><button onclick="call('RIGHT')">&gt;&gt;</button></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button onclick="call('DOWN')">Vol. -</button></td>
+                    <td></td>
+                </tr>
+                </table>
+            </div>
+        </body>
+    </html>
+    %;
+    }
+
+}    # end of package
+
+MovieRemoteControlServer->new(8080)->run();
